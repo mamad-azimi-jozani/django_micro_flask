@@ -1,0 +1,9 @@
+flask
+SQLAlchemy
+Flask-MySQL
+psycopg2_binary
+Flask-Migrate==2.6.0
+flask-script==2.0.5
+flask-cors
+requests
+pika

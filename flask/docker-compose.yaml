@@ -1,0 +1,31 @@
+version: '3.8'
+services:
+  app:
+    build: .
+    ports:
+      - '5000:5000'
+    volumes:
+      - .:/app
+#    environment:
+#      - DB_HOST=db
+#      - DB_NAME=flasky
+#      - DB_USER=mohammad
+#      - DB_PASS=1234
+    command: >
+      sh -c "python wait_for_db.py && 
+            python main.py"
+    
+      
+
+  db:
+    image: mariadb
+    container_name: db
+    environment:
+       MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: 'yes'
+       MARIADB_DATABASE: flasky
+       MARIADB_USER: mohammad
+       MARIADB_PASSWORD: 1234
+    ports:
+      - "3306:3306"
+volumes:
+  psql-data:

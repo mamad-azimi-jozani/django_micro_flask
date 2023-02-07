@@ -1,0 +1,63 @@
+version: '3.9'
+services:
+  flask:
+    build: ./flask
+    ports:
+      - '5000:5000'
+    volumes:
+      - ./flask:/app
+    command: >
+      sh -c "python wait_for_db.py && 
+            python main.py"
+  consumer1:
+    build: ./flask
+    ports:
+      - '5001:5000'
+    volumes:
+      - ./flask:/app
+    command: python consumer.py
+
+
+  django:
+    build: ./django
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./django:/app
+    command: >
+      sh -c "python manage.py wait_for_db &&
+            python manage.py runserver 0.0.0.0:8000"
+    environment:
+      - DB_HOST=postgres
+      - DB_NAME=django
+      - DB_USER=mohammad
+      - DB_PASS=12345678
+    depends_on:
+      - rabbitmq
+
+#  consumer2:
+#    build: ./django
+#    ports:
+#      - '8001:8000'
+#    volumes:
+#      - ./django:/app
+#    command: python consumer.py
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+  postgres:
+    image: postgres:13-alpine
+    volumes:
+      - psql-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=django
+      - POSTGRES_USER=mohammad
+      - POSTGRES_PASSWORD=12345678
+    ports:
+      - "5432:5432"
+
+volumes:
+  psql-data:

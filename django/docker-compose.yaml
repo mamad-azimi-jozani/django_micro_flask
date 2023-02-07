@@ -1,0 +1,38 @@
+version: '3.8'
+services:
+  backend:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    command: >
+      sh -c "python manage.py wait_for_db &&
+            python manage.py runserver 0.0.0.0:8000"
+    environment:
+      - DB_HOST=db
+      - DB_NAME=django
+      - DB_USER=mohammad
+      - DB_PASS=12345678
+    depends_on:
+      - rabbitmq
+
+  rabbitmq:
+      image: rabbitmq:3-management
+      ports:
+        - "15672:15672"
+        - "5672:5672"
+  db:
+    image: postgres:13-alpine
+    volumes:
+      - psql-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=django
+      - POSTGRES_USER=mohammad
+      - POSTGRES_PASSWORD=12345678
+    ports:
+      - "5431:5432"
+
+
+volumes:
+  psql-data:
